@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Diagnosis Results</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #e6f2ff;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #0077b6;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #f9f9f9;
+    }
+
+    th, td {
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #0077b6;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .tag {
+      background: #d0f0c0;
+      color: #1b5e20;
+      padding: 5px 10px;
+      border-radius: 12px;
+      margin: 2px 5px;
+      display: inline-block;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Diagnosis Summary</h2>
+    <table>
+      <tr>
+        <th>Field</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td>Symptoms</td>
+        <td id="symptoms"></td>
+      </tr>
+      <tr>
+        <td>Diagnosis</td>
+        <td id="diagnosis"></td>
+      </tr>
+      <tr>
+        <td>Probability</td>
+        <td id="probability"></td>
+      </tr>
+      <tr>
+        <td>Suggestions</td>
+        <td id="suggestions"></td>
+      </tr>
+      <tr>
+        <td>Medications</td>
+        <td id="medications"></td>
+      </tr>
+    </table>
+
+    <div class="footer">AI-Powered Assistant • Stay healthy!</div>
+  </div>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("finalDiagnosis"));
+
+    // Helper function to create Google & Wiki links
+    function createSearchLinks(text) {
+      const googleLink = `https://www.google.com/search?q=${encodeURIComponent(text)}`;
+      const wikiLink = `https://en.wikipedia.org/wiki/${encodeURIComponent(text.replace(/\s+/g, '_'))}`;
+      return `<a href="${googleLink}" target="_blank">🔍 Google</a> | <a href="${wikiLink}" target="_blank">📚 Wiki</a>`;
+    }
+
+    if (data) {
+      // Symptoms with Google links
+      document.getElementById("symptoms").innerHTML = data.symptoms.map(s => 
+        `<a href="https://www.google.com/search?q=${encodeURIComponent(s)}" target="_blank" class="tag">${s}</a>`
+      ).join(' ');
+
+      // Diagnosis with links
+      const diagText = `<strong>${data.diagnosis}</strong>`;
+      const diagLinks = createSearchLinks(data.diagnosis);
+      document.getElementById("diagnosis").innerHTML = `${diagText}<br>${diagLinks}`;
+
+      // Probability
+      document.getElementById("probability").textContent = data.probability;
+
+      // Suggestions list
+      document.getElementById("suggestions").innerHTML = "<ul>" + data.suggestions.map(s => `<li>${s}</li>`).join('') + "</ul>";
+
+      // Medications with links
+      document.getElementById("medications").innerHTML = data.medications.map(m => 
+        `<a href="https://www.google.com/search?q=${encodeURIComponent(m)}" target="_blank" class="tag">${m}</a>`
+      ).join(' ');
+    } else {
+      document.querySelector(".container").innerHTML = "<h2>No diagnosis data found.</h2>";
+    }
+
+    // Optional: Clear data after display
+    // localStorage.removeItem("finalDiagnosis");
+  </script>
+</body>
+</html>
